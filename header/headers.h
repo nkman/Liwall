@@ -24,9 +24,9 @@
 #include <linux/fs.h>      // Needed by filp
 #include <asm/uaccess.h>   // Needed by segment descriptors
 
-#include </home/nkman/Desktop/Work/Kernels/Initital/Module1/header/modfirewall.h>
-#include </home/nkman/Desktop/Work/Kernels/Initital/Module1/header/driverdescription.h>
-#include </home/nkman/Desktop/Work/Kernels/Initital/Module1/header/variables.h>
-#include </home/nkman/Desktop/Work/Kernels/Initital/Module1/header/functions.h>
+#include </home/nkman/Desktop/Work/Liwall/header/modfirewall.h>
+#include </home/nkman/Desktop/Work/Liwall/header/driverdescription.h>
+#include </home/nkman/Desktop/Work/Liwall/header/variables.h>
+#include </home/nkman/Desktop/Work/Liwall/header/functions.h>
 
 #endif /* _HEADER_HEADERS_H */

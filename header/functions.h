@@ -1,16 +1,134 @@
 #ifndef _HEADER_FUNCTIONS_H
 #define _HEADER_FUNCTIONS_H
 
+#include </home/nkman/Desktop/Work/Liwall/header/sort.h>
+
 // static void InsertInBlockList(restricted ** , __be32);
+/*sets counter to zero*/
 static void ResetCounter(void);
+
+/*Memory allocation to different varibles*/
 static int AssignMem(void);
+
+/*Start function*/
 static int startThings(void);
-static int ReadFileAndInsertInBlockList(void);
+
+/*Read from file*/
+static unsigned int ReadFileAndInsertInBlockList(void);
+
+/*Concatenate string with char*/
 void concatenate(char *, char , int);
+
+/*Ip match function*/
 static unsigned int found(__be32 );
+
+/*Free the allocated memory*/
 static void Empty(void);
+
+/*size of static varible*/
 static int buffsize;
 
+/*Assign string to zero*/
+void zero(char *);
+
+/*Printind buff*/
+static void print_buff(void);
+
+static int startThings(void){
+	int memAlloc = AssignMem();
+	if(memAlloc){
+		ReadFileAndInsertInBlockList();
+		Quick_sort(buff, 0, buffsize-1);
+		print_buff();
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
+
+static void print_buff(){
+	int i=0;
+	for(i=0;i<buffsize;i++)
+		printk(KERN_INFO "buff[%d] is %u\n", i, buff[i]);
+	return;
+}
+
+static int AssignMem(void){
+	int i;
+	buff = kmalloc(sizeof(unsigned int *)*MaxList, GFP_KERNEL);
+	if(buff == NULL){
+		printk(KERN_ALERT "Error allocating size to buff. So not loading.");
+		return 0;
+	}
+	else{
+		for(i=0;i<MaxList;i++)
+			buff[i] = 0;
+		return 1;
+	}
+}
+
+static unsigned int ReadFileAndInsertInBlockList(){
+	struct file *f;
+	mm_segment_t fs;
+	char *buf, *temp_buff;
+	int i,cursize;
+	buffsize = cursize = 0;
+
+	buf = kmalloc(sizeof(char)*MaxList, GFP_KERNEL);	/* Max MaxList bytes !*/
+	temp_buff = kmalloc(sizeof(char)*iplength, GFP_KERNEL);
+	for(i=0;i<MaxList;i++){
+		buf[i] = 0;
+	}
+
+	for(i=0;i<iplength;i++){
+		temp_buff[i] = 0;
+	}
+
+	f = filp_open(IpFile, O_RDONLY, 0);
+
+	if(f == NULL){
+		printk(KERN_ALERT "Ha Unable to open File.\n");
+		return 0;
+	}
+	else{
+		fs = get_fs(); /* Segment Descriptor. */
+		set_fs(get_ds());
+		f->f_op->read(f, buf, MaxList, &f->f_pos);
+		set_fs(fs);
+	}
+	filp_close(f,NULL);
+	i = 0;
+	// temp_buff = "\0";
+	while(buf[i]){
+		if(buf[i] == '\n'){
+			buff[buffsize] = in_aton(temp_buff);
+			printk(KERN_INFO "buff[%d] is %u and temp_buff is %s\n", buffsize, buff[buffsize], temp_buff);
+			buffsize++;
+			cursize=0;
+			zero(temp_buff);
+		}
+		else{
+			concatenate(temp_buff, buf[i], cursize);
+			cursize++;
+		}
+		i++;
+	}
+	return 1;
+}
+
+void zero(char *temp_buff){
+	int i;
+	for(i=0;i<iplength;i++)
+		temp_buff[i] = 0;
+}
+
+void concatenate(char *(dest), char sour, int cursize){
+	dest[cursize] = sour;
+	return;
+}
+
+/*Incoming hook function*/
 static unsigned int hook_function_incoming(unsigned int hooknum, struct sk_buff *skb, 
 	const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *)){
 	
@@ -38,9 +156,8 @@ static unsigned int hook_function_incoming(unsigned int hooknum, struct sk_buff 
 static unsigned int found(__be32 addr){
 	int i;
 	for(i=0;i<buffsize;i++){
-		// printk("in_aton(%s) = %u, addr = %u\n",buff[i], in_aton(buff[i]), addr);
-		if(in_aton(buff[i]) == addr){
-			printk(KERN_INFO "Blocked %s\n", buff[i]);
+		if(buff[i] == addr){
+			printk(KERN_INFO "Blocked %u\n", buff[i]);
 			return NF_DROP;
 		}
 	}
@@ -53,114 +170,10 @@ static void ResetCounter(void){
 	Counter = 0;
 }
 
-static int AssignMem(void){
-	int i,j;
-	buff = kmalloc(sizeof(char *)*MaxList, GFP_KERNEL);
-	if(buff == NULL){
-		printk(KERN_ALERT "Error allocating size to buff. So not loading.");
-		return 0;
-	}
-	else{
-		printk(KERN_INFO "Memory Allocated to buff1 is : %lu", sizeof(buff));
-		for(i=0;i<MaxList;i++){
-			buff[i] = kmalloc((iplength+1), GFP_KERNEL);
-			if(buff[i] == NULL){
-				printk(KERN_ALERT "Error allocating size to buff[i]. So not loading.");
-				return 0;
-			}
-			for(j=0;j<(iplength+1);j++)
-				buff[i][j] = 0;
-		}
-		printk(KERN_INFO "Memory Allocated to buff2 is : %lu", sizeof(buff));
-		return 1;
-	}
-}
-
-/*
-void InsertInBlockList(restricted **node, __be32 ip){
-	restricted *temp = NULL;
-	temp = kmalloc(sizeof(restricted), GFP_KERNEL);
-
-	if(*node == NULL){
-		temp -> Address = ip;
-		temp -> next = NULL;
-		(*node) = temp;
-		return;
-	}
-
-	Inserting in Front	-->	Less code, more efficient while Insertion.	
-	temp -> Address = ip;
-	temp -> next = (*node);
-	*node = temp;
-}
-*/
-
 static void Empty(void){
-	int i;
-	printk(KERN_INFO "Freeing em !\n");
-	for(i=0;i<MaxList;i++){
-		kfree(buff[i]);
-	}
-	printk(KERN_INFO "Freed buff[i] !\n");
 	kfree(buff);
 	printk(KERN_INFO "Freed buff !\n");
 	return;
-}
-
-static int startThings(void){
-	int memAlloc = AssignMem();
-	if(memAlloc){
-		ReadFileAndInsertInBlockList();
-		return 1;
-	}
-	else{
-		return 0;
-	}
-}
-
-void concatenate(char *(dest), char sour, int cursize){
-	dest[cursize] = sour;
-	return;
-}
-
-static int ReadFileAndInsertInBlockList(){
-	struct file *f;
-	mm_segment_t fs;
-	char *buf;
-	int i,j,cursize;
-	buffsize = cursize = 0;
-
-	buf = kmalloc(sizeof(char)*MaxList, GFP_KERNEL);	/* Max MaxList bytes !*/
-	for(i=0;i<MaxList;i++)
-		buf[i] = 0;
-	f = filp_open(IpFile, O_RDONLY, 0);
-
-	if(f == NULL){
-		printk(KERN_ALERT "Ha Unable to open File.\n");
-		return 0;
-	}
-	else{
-		fs = get_fs(); /* Segment Descriptor. */
-		set_fs(get_ds());
-		f->f_op->read(f, buf, MaxList, &f->f_pos);
-		set_fs(fs);
-	}
-	filp_close(f,NULL);
-	i = j = 0;
-	
-	while(buf[i]){
-		if(buf[i] == '\n'){
-			printk(KERN_INFO "buff[%d] is %s\n", buffsize, buff[buffsize]);
-			buffsize++;
-			cursize=0;
-		}
-		else{
-			concatenate(buff[buffsize], buf[i], cursize);
-			cursize++;
-		}
-		i++;
-	}
-	return 1;
 }
 
 #endif /* _HEADER_FUNCTIONS_H */

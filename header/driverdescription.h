@@ -2,7 +2,7 @@
 #define _HEADER_DRIVERDESCRIPTION_H
 
 #define DRIVER_AUTHOR "NAIRITYA KHILARI <nkmann2@gmail.com>"
-#define DRIVER_DESC "A Bot Firewall."
+#define DRIVER_DESC "A Basic Firewall."
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR(DRIVER_AUTHOR);
