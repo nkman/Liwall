@@ -19,8 +19,9 @@ static unsigned int ReadFileAndInsertInBlockList(void);
 /*Concatenate string with char*/
 void concatenate(char *, char , int);
 
-/*Ip match function*/
+/*Ip match function
 static unsigned int found(__be32 );
+*/
 
 /*Free the allocated memory*/
 static void Empty(void);
@@ -31,9 +32,9 @@ void zero(char *);
 /*Printind buff*/
 static void print_buff(void);
 
-/*Ip match function
+/*Ip match function*/
 static unsigned int binary_search(__be32 );
-*/
+
 static int startThings(void){
 	int memAlloc = AssignMem();
 	if(memAlloc){
@@ -149,13 +150,13 @@ static unsigned int hook_function_incoming(unsigned int hooknum, struct sk_buff 
 				printk(KERN_INFO "Blocked ICMP Request from %pI4\n", &(iph->saddr));
 			return NF_DROP;
 		}
-		return found(iph->saddr);
+		return binary_search(iph->saddr);
 	}
 	else
 		return NF_DROP;
 }
 
-
+/*
 static unsigned int found(__be32 addr){
 	int i;
 	for(i=0;i<buffsize;i++){
@@ -168,10 +169,10 @@ static unsigned int found(__be32 addr){
 	printk(KERN_INFO "Received Packet number %u\n",Counter);
 	return NF_ACCEPT;
 }
+*/
 
-/*
 static unsigned int binary_search(__be32 addr){
-	unsigned int first, last, middle;
+	int first, last, middle;
 	first = 0; 
 	last = buffsize-1; 
 	middle = (first+last)/2;
@@ -189,7 +190,7 @@ static unsigned int binary_search(__be32 addr){
 	printk(KERN_INFO "Accepting %pI4\n", &(addr));
 	return NF_ACCEPT;
 }
-*/
+
 
 static void ResetCounter(void){
 	Counter = 0;
