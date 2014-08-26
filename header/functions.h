@@ -25,15 +25,15 @@ static unsigned int found(__be32 );
 /*Free the allocated memory*/
 static void Empty(void);
 
-/*size of static varible*/
-static int buffsize;
-
 /*Assign string to zero*/
 void zero(char *);
 
 /*Printind buff*/
 static void print_buff(void);
 
+/*Ip match function
+static unsigned int binary_search(__be32 );
+*/
 static int startThings(void){
 	int memAlloc = AssignMem();
 	if(memAlloc){
@@ -114,6 +114,8 @@ static unsigned int ReadFileAndInsertInBlockList(){
 		}
 		i++;
 	}
+	kfree(buf);
+	kfree(temp_buff);
 	return 1;
 }
 
@@ -153,6 +155,7 @@ static unsigned int hook_function_incoming(unsigned int hooknum, struct sk_buff 
 		return NF_DROP;
 }
 
+
 static unsigned int found(__be32 addr){
 	int i;
 	for(i=0;i<buffsize;i++){
@@ -165,6 +168,28 @@ static unsigned int found(__be32 addr){
 	printk(KERN_INFO "Received Packet number %u\n",Counter);
 	return NF_ACCEPT;
 }
+
+/*
+static unsigned int binary_search(__be32 addr){
+	unsigned int first, last, middle;
+	first = 0; 
+	last = buffsize-1; 
+	middle = (first+last)/2;
+	while(first <= last){
+		if(addr == buff[middle]){
+			printk(KERN_INFO "Blocked %pI4\n", &(addr));
+			return NF_DROP;
+		}
+		else if(addr > buff[middle])
+			first = middle + 1;
+		else
+			last = middle - 1;
+		middle = (first+last)/2;
+	}
+	printk(KERN_INFO "Accepting %pI4\n", &(addr));
+	return NF_ACCEPT;
+}
+*/
 
 static void ResetCounter(void){
 	Counter = 0;

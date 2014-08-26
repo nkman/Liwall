@@ -1,6 +1,5 @@
 #include </home/nkman/Desktop/Work/Liwall/header/headers.h>
 
-
 int init_module(){
 	if(startThings()){
 		nfho.hook = (hook_function_incoming);

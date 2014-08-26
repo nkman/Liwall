@@ -2,30 +2,29 @@
 #define _HEADER_SORT_H
 
 /*functions defined*/
-unsigned int partition(unsigned int *, unsigned int , unsigned int );
-void Quick_sort(unsigned int *, unsigned int , unsigned int );
-// void swap(unsigned int , unsigned int );
+unsigned int partition(unsigned int *, int , int );
+void Quick_sort(unsigned int *, int , int );
+void _swap_(unsigned int *, unsigned int *);
 /**/
 
-unsigned int partition(unsigned int *a, unsigned int start, unsigned int end){
-	unsigned int pivot = a[end], index = start, i=0, temp;
-	while(i<end){
-		if(a[i] < pivot){	
-			temp = a[i];
-			a[i] = a[index];
-			a[index] = temp;
+unsigned int partition(unsigned int *a, int start, int end){
+	unsigned int pivot;
+	int index, i;
+	i = index = start;
+	pivot = a[end];
+	while(i < end){
+		if(a[i] <= pivot){	
+			_swap_(&(a[i]), &(a[index]));
 			index++;
 		}
 		i++;
 	}
-	temp = a[index];
-	a[index] = a[end];
-	a[end] = temp;
+	_swap_(&(a[index]), &(a[end]));
 	return index;
 }
 
-void Quick_sort(unsigned int *a, unsigned int start, unsigned int end){
-	unsigned int index;
+void Quick_sort(unsigned int *a, int start, int end){
+	int index;
 	if(start < end){
 		index = partition(a, start, end);
 		Quick_sort(a, start, index-1);
@@ -34,12 +33,12 @@ void Quick_sort(unsigned int *a, unsigned int start, unsigned int end){
 	return;
 }
 
-/*
-void swap(unsigned int a, unsigned int b){
+
+void _swap_(unsigned int *i, unsigned int *j){
 	unsigned int temp;
-	temp = a;
-	a = b;
-	b = temp;
+	temp = (*i);
+	(*i) = (*j);
+	(*j) = temp;
 }
-*/
+
 #endif /* _HEADER_FUNCTIONS_H */
