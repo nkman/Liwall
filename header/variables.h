@@ -14,7 +14,7 @@ static unsigned int buffsize;
 
 #define MaxCounterValue 999999	/* Please don't overflow Int value. Ha*/
 #define MaxList 1016	/* Increase this */ /* Fix This.*/
-#define IpFile "/home/nkman/Desktop/Work/Liwall/list.txt"
+#define IpFile "list.txt"
 #define iplength 16
 static unsigned int Counter = 0;
 

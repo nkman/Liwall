@@ -1,7 +1,7 @@
 #ifndef _HEADER_FUNCTIONS_H
 #define _HEADER_FUNCTIONS_H
 
-#include </home/nkman/Desktop/Work/Liwall/header/sort.h>
+#include <header/sort.h>
 
 // static void InsertInBlockList(restricted ** , __be32);
 /*sets counter to zero*/
@@ -30,7 +30,7 @@ static void Empty(void);
 void zero(char *);
 
 /*Printind buff*/
-static void print_buff(void);
+// static void print_buff(void);
 
 /*Ip match function*/
 static unsigned int binary_search(__be32 );
@@ -40,7 +40,7 @@ static int startThings(void){
 	if(memAlloc){
 		ReadFileAndInsertInBlockList();
 		Quick_sort(buff, 0, buffsize-1);
-		print_buff();
+		// print_buff();
 		return 1;
 	}
 	else{
@@ -48,13 +48,14 @@ static int startThings(void){
 	}
 }
 
+/*
 static void print_buff(){
 	int i=0;
 	for(i=0;i<buffsize;i++)
 		printk(KERN_INFO "buff[%d] is %u\n", i, buff[i]);
 	return;
 }
-
+*/
 static int AssignMem(void){
 	int i;
 	buff = kmalloc(sizeof(unsigned int *)*MaxList, GFP_KERNEL);
@@ -104,7 +105,7 @@ static unsigned int ReadFileAndInsertInBlockList(){
 	while(buf[i]){
 		if(buf[i] == '\n'){
 			buff[buffsize] = in_aton(temp_buff);
-			printk(KERN_INFO "buff[%d] is %u and temp_buff is %s\n", buffsize, buff[buffsize], temp_buff);
+			// printk(KERN_INFO "buff[%d] is %u and temp_buff is %s\n", buffsize, buff[buffsize], temp_buff);
 			buffsize++;
 			cursize=0;
 			zero(temp_buff);
